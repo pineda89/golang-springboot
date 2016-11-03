@@ -8,6 +8,9 @@ import (
 	"net/http"
 	"log"
 	"strings"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 
@@ -20,9 +23,15 @@ var _DATACENTER_NAME string = "MyOwn"
 
 var _Configuration map[string]interface{}
 
+type MyStruct struct {
+	Name string `yml:"name"`
+}
+
 
 func Register(cfg map[string]interface{}) {
 	_Configuration = cfg
+
+
 
 	eurekaUrl := cleanEurekaUrlIfNeeded(_Configuration["eureka.client.serviceUrl.defaultZone"].(string))
 
@@ -89,4 +98,10 @@ func startHeartbeat(eurekaUrl string, appName string, hostname string, instance 
 		res.Body.Close()
 		time.Sleep(_HEARTBEAT_SLEEPTIMEBETWEENHEARTBEATINSECONDS * time.Second)
 	}
+}
+
+func CaptureInterruptSignal() {
+	c := make(chan os.Signal, 2)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	<-c
 }

@@ -15,6 +15,7 @@ var _DEFAULT_PORT int = 8080
 
 var Configuration map[string]interface{} = make(map[string]interface{})
 
+
 func LoadConfig() {
 	log.Println("Loading config...")
 	params := preloadConfigurationParams()
