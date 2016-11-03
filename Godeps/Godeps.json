@@ -1,18 +1,6 @@
 {
 	"ImportPath": "github.com/pineda89/golang-springboot",
-	"GoVersion": "go1.7.1",
-	"Deps": [
-		{
-			"ImportPath": "github.com/Jeffail/gabs",
-			"Rev": "855034b6b7a3b7144977efcaefe72d2c64b0d039"
-		},
-		{
-			"ImportPath": "github.com/satori/go.uuid",
-			"Rev": "b061729afc07e77a8aa4fad0a2fd840958f1942a"
-		},
-		{
-			"ImportPath": "github.com/hudl/fargo",
-			"Rev": "14ced469f7dc175f6fbf9f55d799f9f12e302965"
-		}
-	]
+	"GoVersion": "go1.7",
+	"GodepVersion": "v75",
+	"Deps": []
 }
