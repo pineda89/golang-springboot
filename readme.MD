@@ -50,9 +50,9 @@ Just download and compile the code. Also you must call the methods for start it
 package main
 
 import (
-	"golang-springboot/actuator"
-	"golang-springboot/config"
-	"golang-springboot/eureka"
+	"github.com/pineda89/golang-springboot/actuator"
+	"github.com/pineda89/golang-springboot/config"
+	"github.com/pineda89/golang-springboot/eureka"
 )
 
 func main() {
