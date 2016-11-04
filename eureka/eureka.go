@@ -93,9 +93,10 @@ func startHeartbeat(eurekaUrl string, appName string, hostname string, instance 
 				Deregister()
 				Register(_Configuration)
 			}
+		} else {
+			res.Body.Close()
 		}
 
-		res.Body.Close()
 		time.Sleep(_HEARTBEAT_SLEEPTIMEBETWEENHEARTBEATINSECONDS * time.Second)
 	}
 }
