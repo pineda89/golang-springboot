@@ -50,7 +50,7 @@ func loadBasicsFromEnvironmentVars(spring_profiles_active, spring_cloud_config_u
 }
 
 func getConfigFromSpringCloudConfigServer(uriEndpoint string, newConfig map[string]interface{}) {
-	finalEndpoint := uriEndpoint + "/" + newConfig["spring.application.name"].(string) + "/" + newConfig["spring.profiles.active"].(string) + "/" + newConfig["spring.cloud.config.label"].(string)
+	finalEndpoint := uriEndpoint + "/" + newConfig["spring.application.name"].(string) + "/" + newConfig["spring.profiles.active"].(string) + "/"
 	log.Println("Getting config from " + finalEndpoint)
 	rs, err := getJsonFromSpringCloudConfigServer(finalEndpoint)
 	if err != nil {
