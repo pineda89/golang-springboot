@@ -55,6 +55,12 @@ func getConfigFromSpringCloudConfigServer(uriEndpoint string, newConfig map[stri
 	log.Println("Getting config from " + finalEndpoint)
 	rs, err := getJsonFromSpringCloudConfigServer(finalEndpoint)
 	if err != nil {
+		finalEndpoint = uriEndpoint + "/" + newConfig[springapplicationname].(string) + "/" + newConfig[springprofilesactive].(string) + "/"
+		log.Println("Getting config (2nd try) from " + finalEndpoint)
+		rs, err = getJsonFromSpringCloudConfigServer(finalEndpoint)
+	}
+
+	if err != nil {
 		panic("can't load configuration from " + finalEndpoint)
 	}
 	rewriteConfig(rs, newConfig)
