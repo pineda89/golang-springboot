@@ -23,7 +23,7 @@ we must export the nexts env vars:
 | ---------- | ---------- | ---------- |
 | spring_profiles_active | spring cloud config profile | test
 | spring_cloud_config_uri | uri of spring cloud config server | http://127.0.0.1:30606
-| spring_cloud_config_label | spring cloud config label | test
+| spring_cloud_config_label | git branch | master
 | server_port | exposed port | 8080
 | eureka_instance_ip_address | IP of this application, accesible by eureka | 10.0.1.5
 | spring_application_name | name of application | my-golang-application

@@ -9,6 +9,7 @@ import (
 	"strings"
 	"strconv"
 	"log"
+	"errors"
 )
 
 var _DEFAULT_PORT int = 8080
@@ -50,7 +51,7 @@ func loadBasicsFromEnvironmentVars(spring_profiles_active, spring_cloud_config_u
 }
 
 func getConfigFromSpringCloudConfigServer(uriEndpoint string, newConfig map[string]interface{}) {
-	finalEndpoint := uriEndpoint + "/" + newConfig[springapplicationname].(string) + "/" + newConfig[springprofilesactive].(string) + "/"
+	finalEndpoint := uriEndpoint + "/" + newConfig[springapplicationname].(string) + "/" + newConfig[springprofilesactive].(string) + "/" + newConfig[springcloudconfiglabel].(string) + "/"
 	log.Println("Getting config from " + finalEndpoint)
 	rs, err := getJsonFromSpringCloudConfigServer(finalEndpoint)
 	if err != nil {
@@ -135,6 +136,10 @@ func getJsonFromSpringCloudConfigServer(url string) (*gabs.Container, error) {
 		return nil, err
 	}
 	defer r.Body.Close()
+
+	if r.StatusCode != http.StatusOK {
+		return nil, errors.New("Config server response error " + r.Status)
+	}
 
 	b, err := ioutil.ReadAll(r.Body)
 
