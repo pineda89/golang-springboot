@@ -20,37 +20,37 @@ func LoadConfig() {
 	log.Println("Loading config...")
 	params := preloadConfigurationParams()
 	newConfig := loadBasicsFromEnvironmentVars(params[0], params[1], params[2], params[3], params[4], params[5])
-	getConfigFromSpringCloudConfigServer(newConfig["spring.cloud.config.uri"].(string), newConfig)
+	getConfigFromSpringCloudConfigServer(newConfig[springcloudconfiguri].(string), newConfig)
 	Configuration = newConfig
 	log.Println("Config loaded correctly")
 }
 
 func loadBasicsFromEnvironmentVars(spring_profiles_active, spring_cloud_config_uri, spring_cloud_config_label, server_port, eureka_instance_ip_address, spring_application_name string) map[string]interface{} {
 	var newConfig map[string]interface{} = make(map[string]interface{})
-	newConfig["spring.profiles.active"] = spring_profiles_active
-	newConfig["spring.cloud.config.uri"] = spring_cloud_config_uri
-	newConfig["spring.cloud.config.label"] = spring_cloud_config_label
-	newConfig["server.port"] = server_port
-	newConfig["eureka.instance.ip-address"] = eureka_instance_ip_address
-	newConfig["spring.application.name"] = spring_application_name
-	newConfig["hostname"], _ = os.Hostname()
+	newConfig[springprofilesactive] = spring_profiles_active
+	newConfig[springcloudconfiguri] = spring_cloud_config_uri
+	newConfig[springcloudconfiglabel] = spring_cloud_config_label
+	newConfig[serverport] = server_port
+	newConfig[eurekainstanceipaddress] = eureka_instance_ip_address
+	newConfig[springapplicationname] = spring_application_name
+	newConfig[hostname], _ = os.Hostname()
 
 	port, err := strconv.Atoi(newConfig["server.port"].(string))
 	if err != nil {
-		newConfig["server.port"] = _DEFAULT_PORT
+		newConfig[serverport] = _DEFAULT_PORT
 	} else {
-		newConfig["server.port"] = port
+		newConfig[serverport] = port
 	}
 
-	if newConfig["spring.profiles.active"] == "" || newConfig["spring.cloud.config.uri"] == "" || newConfig["spring.cloud.config.label"] == "" || newConfig["server.port"] == "" || newConfig["eureka.instance.ip-address"] == 0 || newConfig["spring.application.name"] == "" {
-		panic("spring_profiles_active , spring_cloud_config_uri , spring_cloud_config_label , server_port , eureka_instance_ip_address, spring_application_name environment vars are mandatories")
+	if newConfig[springprofilesactive] == "" || newConfig[springcloudconfiguri] == "" || newConfig[springcloudconfiglabel] == "" || newConfig[serverport] == "" || newConfig[eurekainstanceipaddress] == 0 || newConfig[springapplicationname] == "" {
+		panic(springprofilesactive + ", " + springcloudconfiguri + ", " + springcloudconfiglabel + ", " + serverport + ", " + eurekainstanceipaddress + ", " + springapplicationname + " environment vars are mandatories")
 	}
 
 	return newConfig
 }
 
 func getConfigFromSpringCloudConfigServer(uriEndpoint string, newConfig map[string]interface{}) {
-	finalEndpoint := uriEndpoint + "/" + newConfig["spring.application.name"].(string) + "/" + newConfig["spring.profiles.active"].(string) + "/"
+	finalEndpoint := uriEndpoint + "/" + newConfig[springapplicationname].(string) + "/" + newConfig[springprofilesactive].(string) + "/"
 	log.Println("Getting config from " + finalEndpoint)
 	rs, err := getJsonFromSpringCloudConfigServer(finalEndpoint)
 	if err != nil {
@@ -60,9 +60,9 @@ func getConfigFromSpringCloudConfigServer(uriEndpoint string, newConfig map[stri
 }
 
 func rewriteConfig(container *gabs.Container, newConfig map[string]interface{}) {
-	newConfig["label"], _ = container.Path("label").Data().(string)
-	newConfig["name"], _ = container.Path("name").Data().(string)
-	source := container.Path("propertySources").Path("source")
+	newConfig[label], _ = container.Path(label).Data().(string)
+	newConfig[name], _ = container.Path(name).Data().(string)
+	source := container.Path(propertySources).Path(source)
 	propertySources, _ := source.Children()
 
 	iterateOverEachKeyAndReplaceVars(propertySources, newConfig)
@@ -158,12 +158,12 @@ func AddKeyValueToConfig(key string, value interface{}) {
 func preloadConfigurationParams() []string {
 	var params []string = make([]string, 6)
 
-	params[0] = os.Getenv("spring_profiles_active")
-	params[1] = os.Getenv("spring_cloud_config_uri")
-	params[2] = os.Getenv("spring_cloud_config_label")
-	params[3] = os.Getenv("server_port")
-	params[4] = os.Getenv("eureka_instance_ip_address")
-	params[5] = os.Getenv("spring_application_name")
+	params[0] = os.Getenv(spring_profiles_active)
+	params[1] = os.Getenv(spring_cloud_config_uri)
+	params[2] = os.Getenv(spring_cloud_config_label)
+	params[3] = os.Getenv(server_port)
+	params[4] = os.Getenv(eureka_instance_ip_address)
+	params[5] = os.Getenv(spring_application_name)
 
 	if len(os.Args)>5 {
 		for i:=0;i<6;i++ {
