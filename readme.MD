@@ -1,5 +1,7 @@
 # golang-starter
 
+## Eureka integration is deprecated
+
 golang-springboot is a project than implements with spring-cloud-config, eureka and actuator like a springboot implementation
 
 The project parts are:
