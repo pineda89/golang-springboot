@@ -17,16 +17,23 @@ var _DEFAULT_PORT int = 8080
 var Configuration map[string]interface{} = make(map[string]interface{})
 
 
-func LoadConfig() {
+func LoadConfig() error {
 	log.Println("Loading config...")
 	params := preloadConfigurationParams()
-	newConfig := loadBasicsFromEnvironmentVars(params[0], params[1], params[2], params[3], params[4], params[5])
-	getConfigFromSpringCloudConfigServer(newConfig[springcloudconfiguri].(string), newConfig)
+	newConfig, err := loadBasicsFromEnvironmentVars(params[0], params[1], params[2], params[3], params[4], params[5])
+	if err != nil {
+		return err
+	}
+	err = getConfigFromSpringCloudConfigServer(newConfig[springcloudconfiguri].(string), newConfig)
+	if err != nil {
+		return err
+	}
 	Configuration = newConfig
 	log.Println("Config loaded correctly")
+	return nil
 }
 
-func loadBasicsFromEnvironmentVars(spring_profiles_active, spring_cloud_config_uri, spring_cloud_config_label, server_port, eureka_instance_ip_address, spring_application_name string) map[string]interface{} {
+func loadBasicsFromEnvironmentVars(spring_profiles_active, spring_cloud_config_uri, spring_cloud_config_label, server_port, eureka_instance_ip_address, spring_application_name string) (map[string]interface{}, error) {
 	var newConfig map[string]interface{} = make(map[string]interface{})
 	newConfig[springprofilesactive] = spring_profiles_active
 	newConfig[springcloudconfiguri] = spring_cloud_config_uri
@@ -44,13 +51,13 @@ func loadBasicsFromEnvironmentVars(spring_profiles_active, spring_cloud_config_u
 	}
 
 	if newConfig[springprofilesactive] == "" || newConfig[springcloudconfiguri] == "" || newConfig[springcloudconfiglabel] == "" || newConfig[serverport] == "" || newConfig[eurekainstanceipaddress] == 0 || newConfig[springapplicationname] == "" {
-		panic(springprofilesactive + ", " + springcloudconfiguri + ", " + springcloudconfiglabel + ", " + serverport + ", " + eurekainstanceipaddress + ", " + springapplicationname + " environment vars are mandatories")
+		return newConfig, errors.New(springprofilesactive + ", " + springcloudconfiguri + ", " + springcloudconfiglabel + ", " + serverport + ", " + eurekainstanceipaddress + ", " + springapplicationname + " environment vars are mandatories")
 	}
 
-	return newConfig
+	return newConfig, nil
 }
 
-func getConfigFromSpringCloudConfigServer(uriEndpoint string, newConfig map[string]interface{}) {
+func getConfigFromSpringCloudConfigServer(uriEndpoint string, newConfig map[string]interface{}) error {
 	finalEndpoint := uriEndpoint + "/" + newConfig[springapplicationname].(string) + "/" + newConfig[springprofilesactive].(string) + "/" + newConfig[springcloudconfiglabel].(string) + "/"
 	log.Println("Getting config from " + finalEndpoint)
 	rs, err := getJsonFromSpringCloudConfigServer(finalEndpoint)
@@ -61,9 +68,11 @@ func getConfigFromSpringCloudConfigServer(uriEndpoint string, newConfig map[stri
 	}
 
 	if err != nil {
-		panic("can't load configuration from " + finalEndpoint)
+		return err
 	}
 	rewriteConfig(rs, newConfig)
+
+	return nil
 }
 
 func rewriteConfig(container *gabs.Container, newConfig map[string]interface{}) {
